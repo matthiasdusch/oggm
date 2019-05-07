@@ -402,7 +402,7 @@ class PastMassBalance(MassBalanceModel):
         temp2dformelt[:] = np.clip(temp2dformelt, 0, temp2dformelt.max())
 
         # Compute solid precipitation from total precipitation
-        ipcpgrad = np.zeros_like(igrad) + 0.0002
+        ipcpgrad = np.zeros_like(igrad) + cfg.PARAMS['prcp_gradient']
         grad_prcp = np.atleast_2d(ipcpgrad).repeat(npix, 0)
         grad_prcp *= (heights.repeat(12).reshape(grad_prcp.shape) -
                       self.ref_hgt)
