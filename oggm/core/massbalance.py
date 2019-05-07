@@ -405,7 +405,8 @@ class PastMassBalance(MassBalanceModel):
         ipcpgrad = np.zeros_like(igrad) + cfg.PARAMS['prcp_gradient']
         grad_prcp = np.atleast_2d(ipcpgrad).repeat(npix, 0)
         grad_prcp *= (heights.repeat(12).reshape(grad_prcp.shape) -
-                      self.ref_hgt)
+                      heights[0])
+        #             self.ref_hgt)
 
         prcp = np.atleast_2d(iprcp).repeat(npix, 0)
         prcp2 = prcp + (prcp * grad_prcp)
