@@ -402,20 +402,22 @@ class PastMassBalance(MassBalanceModel):
         temp2dformelt[:] = np.clip(temp2dformelt, 0, temp2dformelt.max())
 
         # Compute solid precipitation from total precipitation
-        ipcpgrad = np.zeros_like(igrad) + cfg.PARAMS['prcp_gradient']
+        # gradient in mm/100m or %/100m if absolute == True
+        ipcpgrad = np.zeros_like(igrad) + cfg.PARAMS['prcp_gradient']/100
         grad_prcp = np.atleast_2d(ipcpgrad).repeat(npix, 0)
         grad_prcp *= (heights.repeat(12).reshape(grad_prcp.shape) -
                       self.ref_hgt)
-        #              heights[0])
 
         prcp = np.atleast_2d(iprcp).repeat(npix, 0)
-        prcp2 = prcp + (prcp * grad_prcp)
+        if cfg.PARAMS['prcp_gradient_absolute'] is True:
+            prcp = prcp + grad_prcp
+        else:
+            prcp = prcp + prcp * grad_prcp / 100
         fac = 1 - (temp2d - self.t_solid) / (self.t_liq - self.t_solid)
         fac = np.clip(fac, 0, 1)
         prcpsol = prcp * fac
-        prcpsol2 = prcp2 * fac
 
-        return temp2d, temp2dformelt, prcp2, prcpsol2
+        return temp2d, temp2dformelt, prcp, prcpsol
 
     def get_annual_climate(self, heights, year=None):
         """Annual climate information at given heights.
